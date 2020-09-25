@@ -1,32 +1,69 @@
 from django.http import HttpResponse
 from django.shortcuts import render
+from .models import stock
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import FinanceDataReader as fdr
+import matplotlib.pyplot as plt
+import io, urllib, base64
+import numpy as np
 
-def optimal_stock(code = "AAPL"):
-    df = fdr.DataReader(code, datetime.today()+relativedelta(days=-180))
+def optimal_stock(symbol = "AAPL"):
+    df = fdr.DataReader(symbol, datetime.today()+relativedelta(days=-180))    
 
-    global_min = float("INF")
-    max_profit = float("-INF")
-    global global_min_time
-    global global_max_time
+    min_Low = float("INF")
+    profit = float("-INF")
+    buy_time = np.datetime64('nat')
+    sell_time = np.datetime64('nat')
 
     for index, row in df.iterrows():
-        if row.Low < global_min:
-            global_min = row.Low
-            global_min_time = index
-        if row.High - global_min > max_profit:
-            max_profit = row.High - global_min
-            global_max_time = index
+        if row.Low < min_Low:
+            min_Low = row.Low
+            buy_time = index
+        if row.High - min_Low > profit:
+            profit = row.High - min_Low
+            sell_time = index
 
-    return (global_min_time.strftime('%Y-%m-%d'), global_max_time.strftime('%Y-%m-%d'), "%.2f$" %(max_profit))
+    plt.clf()
+    plt.plot(df[["Close", "Open", "Low", "High"]])
+    plt.legend(["Close", "Open", "Low", "High"])
+    # fig = plt.plot(df[["Close", "Open", "Low", "High"]])
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
 
-def stock(request, stock):
-    opt = optimal_stock(stock)
+    plot = base64.b64encode(buf.read())
+    plot = urllib.parse.quote(plot)
+
+    return buy_time.date(), sell_time.date(), profit, plot
+
+def get_stock_data(symbol):
+    # snp = fdr.StockListing('S&P500')
+
+    try:
+        fdr.DataReader(symbol, datetime.today())    
+    except ValueError:
+        return False
+
+    return True
+    # return not snp[snp.Symbol==symbol].empty
+
+def stock_view(request, symbol):
+
+    try:
+        selected_stock = stock.objects.get(symbol = symbol)
+        opt = selected_stock.get_data()
+
+    except stock.DoesNotExist:
+        if get_stock_data(symbol):
+            opt = optimal_stock(symbol)
+            stock.objects.create(buy_date=opt[0], sell_date=opt[1], profit=opt[2], symbol = symbol, plot=opt[3])
+        else:
+            return render(request, 'no_data.html', {'symbol': symbol})     
+        
     return render(request, 'stock.html', {'opts': opt})     
 
 def index(request):
-    opt = optimal_stock()
-    return HttpResponse(opt[0]+ " " + opt[1] + " " + opt[2])
+    opt = stock.objects.first().get_data()
+    return render(request, 'stock.html', {'opts': opt})     
