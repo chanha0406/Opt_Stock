@@ -1,9 +1,17 @@
 <!doctype html>
 <html lang="ko">
+<head>
+<title>ChanHa's Test</title>
+</head>
 <body>
 
 <h1>
 There is no data. ({{symbol}})
 </h1>
+<form action="/stock/" method="get">
+        <label for="symbol"> Enter Stock Symbol: </label>
+        <input id="symbol" type="text" name="symbol" value="{{ search_symbol }}">
+        <input type="submit" value="submit">
+</form> 
 </body>
 </html>
