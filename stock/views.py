@@ -49,8 +49,9 @@ def get_stock_data(symbol):
     return True
     # return not snp[snp.Symbol==symbol].empty
 
-def stock_view(request, symbol):
-
+def stock_view(request):
+    symbol = request.GET.get('symbol')
+    symbol = symbol.upper()
     try:
         selected_stock = stock.objects.get(symbol = symbol)
         opt = selected_stock.get_data()
@@ -62,8 +63,7 @@ def stock_view(request, symbol):
         else:
             return render(request, 'no_data.html', {'symbol': symbol})     
         
-    return render(request, 'stock.html', {'opts': opt})     
+    return render(request, 'stock.html', {'opts': opt, 'symbol':symbol})     
 
 def index(request):
-    opt = stock.objects.first().get_data()
-    return render(request, 'stock.html', {'opts': opt})     
+    return render(request, 'index.html')     

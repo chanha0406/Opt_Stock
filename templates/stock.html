@@ -1,12 +1,13 @@
 <!doctype html>
 <html lang="ko">
 <body>
+<p>Stock Symbol : {{symbol}}</p>
 
-<p>매수일 : {{ opts.0}}</p>
+<p>Buy Date : {{ opts.0}}</p>
 
-<p>매도일 : {{opts.1}}</p>
+<p>Sell Date : {{opts.1}}</p>
 
-<p>이익 : {{opts.2}}</p>
+<p>Optimal Profit : {{opts.2  | floatformat:2 }} $</p>
 
 <img src="data:image/png;base64, {{opts.3}}">
 
