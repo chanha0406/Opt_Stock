@@ -54,7 +54,11 @@ def stock_view(request):
     symbol = symbol.upper()
     try:
         selected_stock = stock.objects.get(symbol = symbol)
-        opt = selected_stock.get_data()
+        if (selected_stock.update_time - datetime.time()) > timedelta(hours=6): 
+             opt = optimal_stock(symbol)
+             selected_stock.updtae(opt[0], opt[1], opt[2], opt[3])
+        else:
+            opt = selected_stock.get_data()
 
     except stock.DoesNotExist:
         if get_stock_data(symbol):
