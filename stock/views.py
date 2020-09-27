@@ -50,10 +50,13 @@ def get_stock_data(symbol):
     # snp = fdr.StockListing('S&P500')
 
     try:
-        fdr.DataReader(symbol, datetime.today())    
+        temp = fdr.DataReader(symbol, datetime.today())    
     except ValueError:
         return False
 
+    if not set(['High','Low']).issubset(temp.columns):
+        return False
+        
     return True
     # return not snp[snp.Symbol==symbol].empty
 
