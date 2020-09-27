@@ -1,8 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from .models import stock
+from django.utils import timezone
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import FinanceDataReader as fdr
 import matplotlib.pyplot as plt
@@ -27,7 +28,11 @@ def optimal_stock(symbol = "AAPL"):
 
     plt.clf()
     plt.plot(df[["Close", "Open", "Low", "High"]])
-    plt.legend(["Close", "Open", "Low", "High"])
+
+    plt.axvline(x=buy_time, label='buy time', c='r')
+    plt.axvline(x=sell_time, label='sell time', c='b')
+    plt.legend(["Close", "Open", "Low", "High", "Buy Time", "Sell Time"])
+
     # fig = plt.plot(df[["Close", "Open", "Low", "High"]])
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
@@ -54,7 +59,8 @@ def stock_view(request):
     symbol = symbol.upper()
     try:
         selected_stock = stock.objects.get(symbol = symbol)
-        if (selected_stock.update_time - datetime.time()) > timedelta(hours=6): 
+        #delata = selected_stock.update_time - timezone.now()
+        if (timezone.now() - selected_stock.update_time)  > timedelta(hours=6): 
              opt = optimal_stock(symbol)
              selected_stock.updtae(opt[0], opt[1], opt[2], opt[3])
         else:
