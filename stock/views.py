@@ -27,12 +27,15 @@ def optimal_stock(symbol = "AAPL"):
             sell_time = index
 
     plt.clf()
+    plt.figure(figsize=(8, 5))
     plt.plot(df[["Close", "Open", "Low", "High"]])
 
     plt.axvline(x=buy_time, label='buy time', c='r')
     plt.axvline(x=sell_time, label='sell time', c='b')
-    plt.legend(["Close", "Open", "Low", "High", "Buy Time", "Sell Time"])
-
+    # plt.legend(["Close", "Open", "Low", "High", "Buy Time", "Sell Time"], bbox_to_anchor=(1, 1), bbox_transform=plt.gcf().transFigure)
+    plt.legend(["Close", "Open", "Low", "High", "Buy Time", "Sell Time"], bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left', ncol = 4, mode="expand", borderaxespad=0.) 
+    #plt.axis('scaled')
+    
     # fig = plt.plot(df[["Close", "Open", "Low", "High"]])
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
@@ -55,12 +58,16 @@ def get_stock_data(symbol):
     # return not snp[snp.Symbol==symbol].empty
 
 def stock_view(request):
-    symbol = request.GET.get('symbol')
+    if not request.GET.get('symbol'):
+        symbol = "AAPL"
+    else :
+        symbol = request.GET.get('symbol')
+
     symbol = symbol.upper()
     try:
         selected_stock = stock.objects.get(symbol = symbol)
         #delata = selected_stock.update_time - timezone.now()
-        if (timezone.now() - selected_stock.update_time)  > timedelta(hours=6): 
+        if (timezone.now() - selected_stock.update_time)  > timedelta(seconds=6): 
              opt = optimal_stock(symbol)
              selected_stock.updtae(opt[0], opt[1], opt[2], opt[3])
         else:

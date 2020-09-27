@@ -1,17 +1,49 @@
 <!doctype html>
+{% load static %}
 <html lang="ko">
 <head>
 <title>ChanHa's Test</title>
+<link href="{% static 'carousel.css' %}"  rel="stylesheet">
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous"> 
+   
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    <!-- Custom styles for this template -->
+
 </head>
+
+
 <body>
+<header>
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+      <form class="form-inline mt-2 mt-md-0" action="/stock/" method="get">
+        <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" id="symbol" name="symbol">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      </form>
+  </nav>
+</header>
 
 <h1>
 There is no data. ({{symbol}})
 </h1>
-<form action="/stock/" method="get">
-        <label for="symbol"> Enter Stock Symbol: </label>
-        <input id="symbol" type="text" name="symbol" value="{{ search_symbol }}">
-        <input type="submit" value="submit">
-</form> 
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+      <script>window.jQuery || document.write('<script src="../assets/js/vendor/jquery.slim.min.js"><\/script>')</script><script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
