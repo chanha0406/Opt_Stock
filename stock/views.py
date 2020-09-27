@@ -67,7 +67,7 @@ def stock_view(request):
     try:
         selected_stock = stock.objects.get(symbol = symbol)
         #delata = selected_stock.update_time - timezone.now()
-        if (timezone.now() - selected_stock.update_time)  > timedelta(seconds=6): 
+        if (timezone.now() - selected_stock.update_time)  > timedelta(hours=6): 
              opt = optimal_stock(symbol)
              selected_stock.updtae(opt[0], opt[1], opt[2], opt[3])
         else:
